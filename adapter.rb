@@ -10,6 +10,7 @@ class Adapter
 
   def download_url(url)
     
+    puts url
     Net::HTTP.start(url) { |http|
 
       resp = http.get("/")
