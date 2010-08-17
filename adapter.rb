@@ -2,7 +2,7 @@
 
 
 require 'net/http'
-
+require 'open-uri'
 
 # Class with common adapter features
 class Adapter 
@@ -10,14 +10,12 @@ class Adapter
 
   def download_url(url)
     
-    puts url
-    Net::HTTP.start(url) { |http|
+    # nelze tak stahovat celou url ale jen url kde je pouze nazev domeny
+#    Net::HTTP.start(url) { |http|
+#      http.get("/")
+#    }
 
-      resp = http.get("/")
-      dump_variable(resp.body)
-    }
-    
-    
+    open(url).read
   end #download_file
     
 

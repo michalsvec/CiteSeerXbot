@@ -1,14 +1,13 @@
 #!/usr/local/bin/ruby
 
-require 'adapter.rb'
+require 'adater_citeseer.rb'
 
 class StradeBot
 
 
   def test
-    var = Adapter.new
-    var.download_url("http://michalsvec.cz")
-    
+    adapter = Adapter_citeseerx.new
+    papers = adapter.get_paper_list(['automata', 'biometrics'])
   end
 
 end #class stradeBot
