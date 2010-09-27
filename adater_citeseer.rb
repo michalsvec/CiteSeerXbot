@@ -12,8 +12,15 @@
 			ascdate - rok, vzestupne
 			recent - aktualnost
 		start - strankovani (strankuje po 10)
+		
+		
+		Hpricot
+    -------
+    http://github.com/hpricot/hpricot/wiki
+		
 =end
 
+require 'rubygems'
 require "yaml"
 require "hpricot"
 require "open-uri"
@@ -46,42 +53,35 @@ class Adapter_citeseerx < Adapter
   end
 
 
+  #
+  # ziska vsechny odkazy na strance s vyhledavanim
+  # vrati pole slovniku title,link,author
+  # 
+  # @param array seznam klicovych slov
   def get_paper_list(keywords)
-
     output = []
 
     keywords.each do |keyword|
-      puts keyword
-      
+      puts "keyword: "+keyword
+
       #parses array of papers
-      data = self.download_url(self.set_url(keyword))
-      papers = data.scan(/<ul class="blockhighlight">(.*?)<\/ul>/m).uniq
+      data = Hpricot(self.download_url(self.set_url(keyword)))
+      papers = data.search("ul.blockhighlight")
 
       # parse necessary data
       papers.each do |item|
-        paper = item.to_s
-        title = paper.scan(/<em class="title">(.*?)<\/em><\/a>/m)
-        link = paper.scan(/<a class="remove doc_details" href="(.*?)">/m)
-        author = paper.scan(/<li class="author[\w\s]*">(\S?)\s+/m)
-        YAML::dump(author)
-        
-        #puts "tit: "+title.to_s+"\nlin: "+link.to_s+"\naut: "+author.to_s+"\nyer: \n\n"
-        output.push({'title' => title, 'link' => link, 'author' => author})
+        #puts item.inner_html # zobrazeni obsahu
+
+        title = item.search("em.title").first.inner_html
+        link = item.search("a.doc_details").first.attributes['href']
+        # odstraneni prazdnych radku, smrsknuti vicenasobnych mezer a rozdeleni podle html entity pomlcky
+        author_and_year = item.search("li.author").first.inner_html.delete("\n").squeeze(" ").split("&#8212;")
+
+        output.push({'title' => title, 'link' => link, 'author' => author_and_year[0], 'year' => author_and_year[1]})
       end
+    end #each
 
-#        puts paper.respond_to
-        
-#        paper.scan(/<em class="title">(.*?)<\/em><\/a>/) do |title|
-#         puts title
-#        end
-#        puts paper
-
-#      puts list
-#      puts data
-      
-#      puts YAML::dump(output)
-    end
-
+    return output
   end #get_paper_list
-  
+
 end # class adapter_citeseerx
