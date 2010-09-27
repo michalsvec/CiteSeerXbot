@@ -10,7 +10,7 @@ class Adapter
 
   def download_url(url)
     
-    # nelze tak stahovat celou url ale jen url kde je pouze nazev domeny
+     #nelze tak stahovat celou url ale jen url kde je pouze nazev domeny
 #    Net::HTTP.start(url) { |http|
 #      http.get("/")
 #    }
