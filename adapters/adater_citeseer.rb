@@ -31,7 +31,7 @@ require 'digest/md5'
 class Adapter_citeseerx < Adapter
 
   # automaticke vygenerovani getteru a setteru pro @url 
-  attr_accessor :url
+  attr_accessor :url, :title
   
   # sort by date desc
   SORTBY = 'date'
@@ -45,6 +45,7 @@ class Adapter_citeseerx < Adapter
   def initialize
     # website url
     @url = "http://citeseerx.ist.psu.edu"
+    @title = "citeseerx"
   end
 
 
@@ -56,6 +57,7 @@ class Adapter_citeseerx < Adapter
     puts "set_url - sortby : "+SORTBY
     url = @url+"/search?q="+keyword+"&sort="+SORTBY+"&start="
     puts "set_url - url    : "+url
+    puts ""
 
     return url
   end
@@ -87,13 +89,10 @@ class Adapter_citeseerx < Adapter
         author_and_year = item.search("li.author").first.inner_html.delete("\n").squeeze(" ").split("&#8212;")
 
         additional_info = self.get_additional_info(link)
-
-        #puts additional_info['down_link']
         downloaded = self.download_paper(additional_info['links'])
 
-
         output.push({
-          'title' => title,
+          'title' => title.strip,
           'author' => author_and_year[0].strip,
           'link' => downloaded, 
           'year' => author_and_year[1].strip, 
@@ -116,7 +115,8 @@ class Adapter_citeseerx < Adapter
     link = @url+link
     data = Hpricot(self.download_url(link))
     
-    abstract = data.search("#main_content p.para4")
+    abstract = data.search("#main_content p.para4").inner_html
+
     
     download_links = Array.new
     data.search("#downloads a").each do |link|
@@ -164,18 +164,21 @@ class Adapter_citeseerx < Adapter
             ext = File.extname(link)
           end
 
-          md5 = Digest::MD5.hexdigest(link)
-          filename = md5 + ext 
-          File.open("files/"+filename, 'w') {|f| f.write(data) }
+          hash = self.get_hashed_filename(link)
+          filename = hash + ext 
+
+          # ulozi soubor do prislusne slozky
+          self.save_paper(filename, data)
           break;
+
         else 
           puts "nelze stahnout: "+link
           next # jinak skoci na dalsi soubor
       end
     end # .each
-    
-    puts "soubor: "+filename+"---------------------------------------"
-    
+
+    puts "soubor: "+filename+"---------------------------------------\n"
+
     if(filename == "")
       return nil
     else 

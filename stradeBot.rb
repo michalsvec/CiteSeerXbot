@@ -16,7 +16,16 @@ class StradeBot
   # pripojeni k databazi
   @dbh = nil
 
+  # nazev tabulky v dtb
   @table = "paper"
+
+  # objekt adapteru
+  @adapter = nil
+
+  # pocet stranek, ktere stahovat
+  PAGES = 10
+
+
 
   # konstruktor
   def initialize
@@ -31,8 +40,8 @@ class StradeBot
 
 
   def test
-    adapter = Adapter_citeseerx.new
-    papers = adapter.get_paper_list(['automata'])
+    @adapter = Adapter_citeseerx.new
+    papers = @adapter.get_paper_list(['automata'])
 
     self.save_to_db(papers)
   end
@@ -44,7 +53,7 @@ class StradeBot
   #
   def save_to_db(items)
 
-    sql = "INSERT INTO #{@table} (id, title, link, author, year, saved) VALUES "
+    sql = "INSERT INTO #{@table} (id, title, link, author, year, saved, abstract, origin) VALUES "
 
     # zjednoduseni dotazu - spojeni do jednoho
     values = Array.new
@@ -56,13 +65,15 @@ class StradeBot
                 '"+@dbh.escape_string(item['link'])+"', 
                 '"+@dbh.escape_string(item['author'])+"',
                 '"+@dbh.escape_string(item['year'])+"',
-                '"+time.to_s+"'
+                '"+time.to_s+"',
+                '"+@dbh.escape_string(item['abstract'])+"',
+                '"+@adapter.title+"'
               )"
     }
 
     sql += values.join(", ")
     @dbh.query(sql)
-  end
+  end # /save_to_db
 
 end #class stradeBot
 
