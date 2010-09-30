@@ -1,4 +1,6 @@
-#!/usr/local/bin/ruby -w
+#!/usr/bin/ruby -w
+
+
 =begin
 
 
@@ -6,7 +8,8 @@
 
 require 'rubygems'
 require "mysql"
-require 'adater_citeseer.rb'
+require "time"
+require 'adapters/adater_citeseer.rb'
 
 class StradeBot
 
@@ -41,19 +44,21 @@ class StradeBot
   #
   def save_to_db(items)
 
-    sql = "INSERT INTO #{@table} (id, title, link, author, year) VALUES "
+    sql = "INSERT INTO #{@table} (id, title, link, author, year, saved) VALUES "
 
     # zjednoduseni dotazu - spojeni do jednoho
     values = Array.new
-    items.each do |item|
+    time = Time.now.to_i
+
+    items.each { |item|
       values << "(NULL,
                 '"+@dbh.escape_string(item['title'])+"',
-                 '"+@dbh.escape_string(item['link'])+"', 
-                 '"+@dbh.escape_string(item['author'])+"',
-                  '"+@dbh.escape_string(item['year'])+"'
+                '"+@dbh.escape_string(item['link'])+"', 
+                '"+@dbh.escape_string(item['author'])+"',
+                '"+@dbh.escape_string(item['year'])+"',
+                '"+time.to_s+"'
               )"
-
-    end
+    }
 
     sql += values.join(", ")
     @dbh.query(sql)
@@ -62,10 +67,9 @@ class StradeBot
 end #class stradeBot
 
 
+
 bot = StradeBot.new
 bot.test
-
-
 
 
 # ulozeni souboru
