@@ -25,8 +25,10 @@ require "yaml"
 require "hpricot"
 require "open-uri"
 require 'net/http'
-require 'adapters/adapter.rb'
 require 'digest/md5'
+
+require './classes/adapter.rb'
+
 
 class Adapter_citeseerx < Adapter
 
@@ -38,6 +40,9 @@ class Adapter_citeseerx < Adapter
 
   # pager count
   COUNT = 10
+
+  #kolik stranek stahovat?
+  LIMIT = 10
 
 
 
@@ -52,10 +57,10 @@ class Adapter_citeseerx < Adapter
 
   # vrati URL pro vyhledavani
   # TODO: strankovani
-  def set_url(keyword)
+  def set_url(keyword, page)
     puts "set_url - keyword: "+keyword
     puts "set_url - sortby : "+SORTBY
-    url = @url+"/search?q="+keyword+"&sort="+SORTBY+"&start="
+    url = @url+"/search?q="+keyword+"&sort="+SORTBY+"&start="+(page*COUNT).to_s
     puts "set_url - url    : "+url
     puts ""
 
@@ -71,35 +76,42 @@ class Adapter_citeseerx < Adapter
   # @param array seznam klicovych slov
   def get_paper_list(keywords)
     output = []
+    page = 0
 
     keywords.each do |keyword|
       puts "keyword: "+keyword
 
-      #parses array of papers
-      data = Hpricot(self.download_url(self.set_url(keyword)))
-      papers = data.search("ul.blockhighlight")
+      LIMIT.times do |page|
+        puts "page: "+page.to_s
 
-      # parse necessary data
-      papers.each do |item|
-        #puts item.inner_html # zobrazeni obsahu
+        #parses array of papers
+        data = Hpricot(self.download_url(self.set_url(keyword, page)))
+        papers = data.search("ul.blockhighlight")
+  
+        # parse necessary data
+        papers.each do |item|
+          document = Document.new()
+  
+          title = item.search("em.title").first.inner_html
+          link = item.search("a.doc_details").first.attributes['href']
+          # odstraneni prazdnych radku, smrsknuti vicenasobnych mezer a rozdeleni podle html entity pomlcky
+          author_and_year = item.search("li.author").first.inner_html.delete("\n").squeeze(" ").split("&#8212;")
+  
+          additional_info = self.get_additional_info(link)
+          downloaded = self.download_paper(additional_info['links'])
+  
+          output.push({
+            'title' => title.strip,
+            'author' => author_and_year[0].strip,
+            'filename' => downloaded,
+            'filetype' => 'application/pdf', 
+            'year' => author_and_year[1].strip, 
+            'abstract' => additional_info['abstract']
+          })
 
-        title = item.search("em.title").first.inner_html
-        link = item.search("a.doc_details").first.attributes['href']
-        # odstraneni prazdnych radku, smrsknuti vicenasobnych mezer a rozdeleni podle html entity pomlcky
-        author_and_year = item.search("li.author").first.inner_html.delete("\n").squeeze(" ").split("&#8212;")
-
-        additional_info = self.get_additional_info(link)
-        downloaded = self.download_paper(additional_info['links'])
-
-        output.push({
-          'title' => title.strip,
-          'author' => author_and_year[0].strip,
-          'link' => downloaded, 
-          'year' => author_and_year[1].strip, 
-          'abstract' => additional_info['abstract']
-        })
-      end
-    end #each
+        end #papers.each
+      end #LIMIT.times
+    end #keywords.each
 
     return output
   end #get_paper_list
@@ -142,9 +154,9 @@ class Adapter_citeseerx < Adapter
   def download_paper(links)
     
     filename = "";
-    
+
     links.each do |link|
-      puts "trying to download: "+link
+      puts "trying: \t"+link
       
       # prvne zkontroluji, zda stranka nevraci 404
       parsed_url = URI.parse(link)
@@ -152,7 +164,7 @@ class Adapter_citeseerx < Adapter
       
       case response
         when Net::HTTPSuccess then
-          puts "downloading url: "+link
+          puts "downloading"
           data = Net::HTTP.get(URI.parse(link))
 
           # pokud je soubor z cache - musi se typ souboru dostat z URL - parametr type
@@ -172,12 +184,12 @@ class Adapter_citeseerx < Adapter
           break;
 
         else 
-          puts "nelze stahnout: "+link
+          puts "nelze stahnout!!!1"
           next # jinak skoci na dalsi soubor
       end
     end # .each
 
-    puts "soubor: "+filename+"---------------------------------------\n"
+    puts "soubor: \t"+filename+"----------------------------------------\n\n"
 
     if(filename == "")
       return nil
@@ -185,4 +197,7 @@ class Adapter_citeseerx < Adapter
       return filename
     end
   end # /download_paper
+
+
+
 end # class adapter_citeseerx

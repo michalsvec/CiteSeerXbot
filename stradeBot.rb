@@ -9,7 +9,8 @@
 require 'rubygems'
 require "mysql"
 require "time"
-require 'adapters/adater_citeseer.rb'
+
+require 'classes/adapters/adater_citeseer.rb'
 
 class StradeBot
 
@@ -29,7 +30,7 @@ class StradeBot
 
   # konstruktor
   def initialize
-    @table = "paper"
+    @table = "documents"
     
     # real_connect(host,user,password,db,port,socket,flags)
     @dbh = Mysql.real_connect("localhost", "strade", "strade", "strade", 3306, "/Applications/MAMP/tmp/mysql/mysql.sock")
@@ -48,32 +49,6 @@ class StradeBot
 
 
 
-  #
-  # ulozi do databaze klicova slova a udaje
-  #
-  def save_to_db(items)
-
-    sql = "INSERT INTO #{@table} (id, title, link, author, year, saved, abstract, origin) VALUES "
-
-    # zjednoduseni dotazu - spojeni do jednoho
-    values = Array.new
-    time = Time.now.to_i
-
-    items.each { |item|
-      values << "(NULL,
-                '"+@dbh.escape_string(item['title'])+"',
-                '"+@dbh.escape_string(item['link'])+"', 
-                '"+@dbh.escape_string(item['author'])+"',
-                '"+@dbh.escape_string(item['year'])+"',
-                '"+time.to_s+"',
-                '"+@dbh.escape_string(item['abstract'])+"',
-                '"+@adapter.title+"'
-              )"
-    }
-
-    sql += values.join(", ")
-    @dbh.query(sql)
-  end # /save_to_db
 
 end #class stradeBot
 

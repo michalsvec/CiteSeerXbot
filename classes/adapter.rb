@@ -62,4 +62,33 @@ class Adapter
 
     File.open("files/"+dir1+'/'+dir2+'/'+filename, 'w') {|f| f.write(content) }
   end #/ save_paper
+
+
+
+  #
+  # ulozi do databaze klicova slova a udaje dokumentu
+  # volano z trid jednotlivych adapteru po kontrole, zda uz soubor neexistuje
+  #
+  def save_to_db(item)
+
+    sql = "INSERT INTO #{@table} (id, title, published, created, origin, abstract, filename, filetype) 
+           VALUES "
+
+    # zjednoduseni dotazu - spojeni do jednoho
+    time = Time.now.to_i
+
+    values = "(NULL,
+              '"+@dbh.escape_string(item['title'])+"',
+              '"+@dbh.escape_string(item['year'])+"', 
+              '"+time.to_s+"',
+              '"+@adapter.title+"',
+              '"+@dbh.escape_string(item['abstract'])+"',
+              '"+@dbh.escape_string(item['filename'])+"',
+              '"+@dbh.escape_string(item['filetype'])+"'
+            )"
+    @dbh.query(sql)
+  end # /save_to_db
+
+
+
 end
