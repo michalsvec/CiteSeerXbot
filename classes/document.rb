@@ -28,7 +28,13 @@ class Document
   # pokud uz takovy soubor existuje, vrati false
   # pokud jeste ne, vrati true
   def unique?
+    puts "--- IS UNIQUE?? --- " 
     
+  end
+  
+  
+  def save
+    puts " --- SAVING --- "
     
   end
 end

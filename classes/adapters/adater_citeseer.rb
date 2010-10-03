@@ -90,24 +90,28 @@ class Adapter_citeseerx < Adapter
   
         # parse necessary data
         papers.each do |item|
-          document = Document.new()
+          
   
           title = item.search("em.title").first.inner_html
           link = item.search("a.doc_details").first.attributes['href']
           # odstraneni prazdnych radku, smrsknuti vicenasobnych mezer a rozdeleni podle html entity pomlcky
           author_and_year = item.search("li.author").first.inner_html.delete("\n").squeeze(" ").split("&#8212;")
-  
           additional_info = self.get_additional_info(link)
-          downloaded = self.download_paper(additional_info['links'])
-  
-          output.push({
-            'title' => title.strip,
-            'author' => author_and_year[0].strip,
-            'filename' => downloaded,
-            'filetype' => 'application/pdf', 
-            'year' => author_and_year[1].strip, 
-            'abstract' => additional_info['abstract']
-          })
+ 
+          # vytvoreni tridy pro dokument
+          doc = Document.new()
+          doc.title = title.strip
+          doc.author = author_and_year[0].strip
+          doc.year = author_and_year[1].strip 
+          doc.abstract = additional_info['abstract']
+
+          # kontrola, zda dokument ukladat nebo ne
+          if (doc.unique?)
+            downloaded = self.download_paper(additional_info['links'])
+            doc.filename = downloaded
+            doc.filetype = 'application/pdf' 
+            doc.save()
+          end
 
         end #papers.each
       end #LIMIT.times
