@@ -7,36 +7,18 @@
 =end
 
 require 'rubygems'
-require "mysql"
 require "time"
 
+require "./classes/strade.rb"
 require 'classes/adapters/adater_citeseer.rb'
 
-class StradeBot
-
-  # pripojeni k databazi
-  @dbh = nil
-
-  # nazev tabulky v dtb
-  @table = "paper"
+class StradeBot < Strade
 
   # objekt adapteru
   @adapter = nil
 
   # pocet stranek, ktere stahovat
   PAGES = 10
-
-
-
-  # konstruktor
-  def initialize
-    @table = "documents"
-    
-    # real_connect(host,user,password,db,port,socket,flags)
-    @dbh = Mysql.real_connect("localhost", "strade", "strade", "strade", 3306, "/Applications/MAMP/tmp/mysql/mysql.sock")
-    puts "Server version: " + @dbh.get_server_info
-  end
-
 
 
 

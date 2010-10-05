@@ -4,8 +4,10 @@
 require 'net/http'
 require 'open-uri'
 
+require "./classes/strade.rb"
+
 # Class with common adapter features
-class Adapter 
+class Adapter < Strade 
 
 
   #
@@ -47,7 +49,7 @@ class Adapter
   #
   # ulozi soubor do spravne slozky
   # ukladaji se do slozek - "prvni 4 znaky z hashe"/"druhe 4 znaky z hashe"/soubor.pdf
-  def save_paper(filename, content)
+  def save_paper_file(filename, content)
 
     dir1 = self.get_1st_dir_lvl(filename)
     dir2 = self.get_2nd_dir_lvl(filename)
@@ -64,31 +66,4 @@ class Adapter
   end #/ save_paper
 
 
-
-  #
-  # ulozi do databaze klicova slova a udaje dokumentu
-  # volano z trid jednotlivych adapteru po kontrole, zda uz soubor neexistuje
-  #
-  def save_to_db(item)
-
-    sql = "INSERT INTO #{@table} (id, title, published, created, origin, abstract, filename, filetype) 
-           VALUES "
-
-    # zjednoduseni dotazu - spojeni do jednoho
-    time = Time.now.to_i
-
-    values = "(NULL,
-              '"+@dbh.escape_string(item['title'])+"',
-              '"+@dbh.escape_string(item['year'])+"', 
-              '"+time.to_s+"',
-              '"+@adapter.title+"',
-              '"+@dbh.escape_string(item['abstract'])+"',
-              '"+@dbh.escape_string(item['filename'])+"',
-              '"+@dbh.escape_string(item['filetype'])+"'
-            )"
-    @dbh.query(sql)
-  end # /save_to_db
-
-
-
-end
+end # /adapter

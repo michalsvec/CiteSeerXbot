@@ -28,6 +28,7 @@ require 'net/http'
 require 'digest/md5'
 
 require './classes/adapter.rb'
+require './classes/document.rb'
 
 
 class Adapter_citeseerx < Adapter
@@ -99,19 +100,23 @@ class Adapter_citeseerx < Adapter
           additional_info = self.get_additional_info(link)
  
           # vytvoreni tridy pro dokument
-          doc = Document.new()
+          doc = Document.new(@title)
           doc.title = title.strip
           doc.author = author_and_year[0].strip
           doc.year = author_and_year[1].strip 
           doc.abstract = additional_info['abstract']
 
           # kontrola, zda dokument ukladat nebo ne
-          if (doc.unique?)
+          if doc.unique? then
+            puts "unikatni"
             downloaded = self.download_paper(additional_info['links'])
             doc.filename = downloaded
             doc.filetype = 'application/pdf' 
             doc.save()
+          else
+            puts "NEunikatni"
           end
+          
 
         end #papers.each
       end #LIMIT.times
@@ -184,7 +189,7 @@ class Adapter_citeseerx < Adapter
           filename = hash + ext 
 
           # ulozi soubor do prislusne slozky
-          self.save_paper(filename, data)
+          self.save_paper_file(filename, data)
           break;
 
         else 
