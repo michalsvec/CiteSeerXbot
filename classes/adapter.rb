@@ -4,10 +4,9 @@
 require 'net/http'
 require 'open-uri'
 
-require "./classes/strade.rb"
 
 # Class with common adapter features
-class Adapter < Strade 
+class Adapter 
 
 
   #

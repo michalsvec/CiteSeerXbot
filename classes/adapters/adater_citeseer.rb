@@ -99,25 +99,31 @@ class Adapter_citeseerx < Adapter
           author_and_year = item.search("li.author").first.inner_html.delete("\n").squeeze(" ").split("&#8212;")
           additional_info = self.get_additional_info(link)
  
+          puts "Dokument:\t"+title
+
           # vytvoreni tridy pro dokument
           doc = Document.new(@title)
-          doc.title = title.strip
-          doc.author = author_and_year[0].strip
+          # gsub stripne html tagy
+          doc.title = title.strip.gsub(/<\/?[^>]*>/, "")
           doc.year = author_and_year[1].strip 
           doc.abstract = additional_info['abstract']
-
+          # rozdeleni jmen autoru - citeseerx ma rozdeleno mezerou a carkou
+          doc.authors = self.parse_authors(author_and_year[0].strip.sub(/^by /, ""))
+            
           # kontrola, zda dokument ukladat nebo ne
           if doc.unique? then
             puts "unikatni"
             downloaded = self.download_paper(additional_info['links'])
             doc.filename = downloaded
             doc.filetype = 'application/pdf' 
-            doc.save()
+            if(doc.save() === false)
+              puts "Chyba pri ukladani dokumentu!"
+            end
           else
             puts "NEunikatni"
           end
           
-
+          puts "\n\n"
         end #papers.each
       end #LIMIT.times
     end #keywords.each
@@ -198,7 +204,7 @@ class Adapter_citeseerx < Adapter
       end
     end # .each
 
-    puts "soubor: \t"+filename+"----------------------------------------\n\n"
+    puts "soubor: \t"+filename
 
     if(filename == "")
       return nil
@@ -206,6 +212,19 @@ class Adapter_citeseerx < Adapter
       return filename
     end
   end # /download_paper
+
+
+
+  #
+  # parsne autory a vrati v poli, aby bylo mozne je ulozit domapovaci tabulky
+  # @param string seznam autoru oddeleny v pripade citeseerx carkou
+  def parse_authors(author)
+    authors = author.split(", ")
+    authors.each do |author|
+      author.strip
+    end
+    return authors
+  end # /parse_authors
 
 
 

@@ -8,25 +8,41 @@
 
 require 'rubygems'
 require "time"
+require "mysql"
+require "yaml"
 
-require "./classes/strade.rb"
 require 'classes/adapters/adater_citeseer.rb'
 
-class StradeBot < Strade
+#
+# printovaci shorcut
+def d(data)
+  puts YAML::dump(data)
+end
+
+#
+# pripojeni k databazi
+# real_connect(host,user,password,db,port,socket,flags)
+$dbh = Mysql.init
+$dbh.options(Mysql::SET_CHARSET_NAME, 'utf8')
+$dbh.real_connect("localhost", "strade", "strade", "strade", 3306, "/Applications/MAMP/tmp/mysql/mysql.sock")
+$dbh.query("SET NAMES utf8")
+#puts "Server version: " + @dbh.get_server_info
+
+
+
+class StradeBot
 
   # objekt adapteru
   @adapter = nil
 
-  # pocet stranek, ktere stahovat
-  PAGES = 10
 
 
 
   def test
     @adapter = Adapter_citeseerx.new
     papers = @adapter.get_paper_list(['automata'])
-
-    self.save_to_db(papers)
+      
+    puts "USPESNE DOKONCENO! HURA"
   end
 
 
