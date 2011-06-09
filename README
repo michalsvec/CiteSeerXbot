@@ -8,6 +8,9 @@ Downloaded files are saved by first 4 letters from md5 hash of its name.
 Metadata are stored in database.
 
 
+Parser is made universal for any other database. It can search in many databases with more adapters.
+But now, there's implementation only for CiteSeerX.
+
 
 TODO: 
 * translate comments
