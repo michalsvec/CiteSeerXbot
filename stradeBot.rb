@@ -1,11 +1,5 @@
 #!/usr/bin/ruby -w
 
-
-=begin
-
-
-=end
-
 require 'rubygems'
 require "time"
 require "mysql"
@@ -24,7 +18,7 @@ end
 # real_connect(host,user,password,db,port,socket,flags)
 $dbh = Mysql.init
 $dbh.options(Mysql::SET_CHARSET_NAME, 'utf8')
-$dbh.real_connect("localhost", "strade", "strade", "strade", 3306, "/Applications/MAMP/tmp/mysql/mysql.sock")
+$dbh.real_connect("localhost", "", "", "", 3306)
 $dbh.query("SET NAMES utf8")
 #puts "Server version: " + @dbh.get_server_info
 
@@ -36,17 +30,12 @@ class StradeBot
   @adapter = nil
 
 
-
-
   def test
     @adapter = Adapter_citeseerx.new
     papers = @adapter.get_paper_list(['automata'])
       
-    puts "USPESNE DOKONCENO! HURA"
+    puts "succes"
   end
-
-
-
 
 end #class stradeBot
 

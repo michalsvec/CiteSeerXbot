@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>adater_citeseer.rb</string>
+	<string>classes/adapter.rb</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -27,54 +27,39 @@
 	<integer>200</integer>
 	<key>metaData</key>
 	<dict>
-		<key>adapter.rb</key>
+		<key>classes/adapter.rb</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
 				<integer>0</integer>
 				<key>line</key>
-				<integer>2</integer>
+				<integer>11</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
-		</dict>
-		<key>adater_citeseer.rb</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>90</integer>
-				<key>line</key>
-				<integer>79</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>41</integer>
 		</dict>
 		<key>stradeBot.rb</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>56</integer>
+				<integer>47</integer>
 				<key>line</key>
-				<integer>52</integer>
+				<integer>20</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>32</integer>
+			<integer>0</integer>
 		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
 		<string>stradeBot.rb</string>
-		<string>adater_citeseer.rb</string>
-		<string>adapter.rb</string>
+		<string>classes/adapter.rb</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<false/>
@@ -87,10 +72,26 @@
 			<key>isExpanded</key>
 			<true/>
 			<key>subItems</key>
-			<dict/>
+			<dict>
+				<key>classes</key>
+				<dict>
+					<key>isExpanded</key>
+					<true/>
+					<key>subItems</key>
+					<dict>
+						<key>adapters</key>
+						<dict>
+							<key>isExpanded</key>
+							<true/>
+							<key>subItems</key>
+							<dict/>
+						</dict>
+					</dict>
+				</dict>
+			</dict>
 		</dict>
 	</dict>
 	<key>windowFrame</key>
-	<string>{{683, 280}, {1237, 778}}</string>
+	<string>{{32, 22}, {1237, 778}}</string>
 </dict>
 </plist>
