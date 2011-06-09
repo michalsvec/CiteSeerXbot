@@ -1,0 +1,21 @@
+One of my oldest project in ruby.
+
+
+CiteSeerX database parser
+==============
+It searches CiteSeeX database for papers containing specific keyword and downloads PDF file. 
+Downloaded files are saved by first 4 letters from md5 hash of its name. 
+Metadata are stored in database.
+
+
+
+TODO: 
+* translate comments
+* upload database scheme
+* use nokogiri instead of hpricot
+* use bundler
+
+
+
+
+
